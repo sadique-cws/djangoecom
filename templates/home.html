@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row">
+            {% for pro in object_list %}
+
+            <div class="col-lg-3">
+                <div class="card">
+                    <img src="{{ pro.image.url }}" alt="" class="card-img-top">
+                    <div class="card-body">
+                        <h6>{{ pro.title }}</h6>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
