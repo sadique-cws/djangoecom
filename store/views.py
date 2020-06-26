@@ -8,4 +8,10 @@ class HomeView(ListView):
     paginate_by = 10
     template_name = "home.html"
 
+class ItemView(DetailView):
+    model = Item
+    template_name = "product.html"
+    slug_url_kwarg = "slug"
 
+class AddToCart():
+    pass
