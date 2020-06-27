@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+
+    <div class="row">
+    <div class="col-lg-9">
+        {% for o in order.items.all %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <img src="{{ o.item.image.url }}" alt="" class="card-img-top">
+                    </div>
+                    <div class="col-lg-9">
+                        <h2>{{ o.item.title }}</h2>
+                        <p class="small">Rs. {{ o.item.price }}</p>
+                        <p>Qty: {{ o.qty }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-lg-3">
+
+    </div>
+    </div>
+    </div>
+{% endblock %}

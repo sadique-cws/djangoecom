@@ -45,6 +45,12 @@ class Item(models.Model):
             "slug":self.slug
         })
 
+    def get_add_to_cart_url(self):
+        return reverse("store:add-to-cart",kwargs={
+            "slug":self.slug
+        })
+
+
     def save(self,*args,**kwargs):
         self.slug = slugify(self.title)
         super(Item, self).save(*args,**kwargs)
@@ -59,7 +65,7 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
     items = models.ManyToManyField(OrderItem)
-    ordered_date = models.DateTimeField()
+    ordered_date = models.DateTimeField(null=True)
     add_date = models.DateTimeField(auto_now_add=True)
 
 
