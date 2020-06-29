@@ -17,6 +17,57 @@ class ItemView(DetailView):
     slug_url_kwarg = "slug"
 
 
+
+class RemoveFromCart(LoginRequiredMixin,View):
+    def get(self,request,slug,*args,**kwargs):
+        item = get_object_or_404(Item,slug=slug)
+        order_qs = Order.objects.filter(user = request.user,ordered=False)
+        if order_qs.exists():
+            order = order_qs[0]
+            if order.items.filter(item__slug=slug).exists():
+                order_item = OrderItem.objects.filter(item=item,user=request.user,ordered=False
+                )[0]
+
+                if order_item.qty > 1:
+                    order_item.qty -= 1
+                    order_item.save()
+                    #todo: msg your cart is updated
+                else:
+                    order.items.remove(order_item)
+                    #todo: msg item removed
+                return redirect("store:order_summary")
+            else:
+                #todo: msg this item is not in your cart
+                return redirect("store:order_summary")
+        else:
+            #todo: you do not have any active order in your cart
+            return redirect("store:order_summary")
+
+
+class RemoveItem(LoginRequiredMixin,View):
+    def get(self,request,slug,*args,**kwargs):
+        item = get_object_or_404(Item,slug=slug)
+
+        order_qs = Order.objects.filter(
+            user = request.user,
+            ordered=False
+        )
+        if order_qs.exists():
+            order = order_qs[0]
+            if order.items.filter(item__slug=item.slug).exists():
+                order_item = OrderItem.objects.filter(item=item,user=request.user,ordered=False)[0]
+                order.items.remove(order_item)
+                order_item.delete()
+                #todo: msg item removed successfully
+                return redirect("store:order_summary")
+            else:
+                #todo: item was not in your cart
+                return redirect("store:order_summary")
+        else:
+            #todo: you don't have any active order
+            return redirect("store:order_summary")
+
+
 class AddToCart(LoginRequiredMixin,View):
     def get(self,request,slug,*args,**kwargs):
         item = get_object_or_404(Item,slug=slug)
