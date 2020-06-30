@@ -23,4 +23,23 @@
             </div>
         </div>
     </div>
+
+      <div class="container mt-5">
+      <h4>Related Products</h4>
+        <div class="row">
+            {% for pro in related_items %}
+            <div class="col-lg-3">
+                <div class="card">
+                    <img src="{{ pro.image.url }}" alt="" class="card-img-top">
+                    <div class="card-body">
+                        <h6>{{ pro.title }}</h6>
+                            <a href="{{ pro.get_absolute_url }}" class="btn btn-primary stretched-link">Buy Now</a>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
 {% endblock %}

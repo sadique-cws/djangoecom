@@ -16,7 +16,10 @@ class ItemView(DetailView):
     template_name = "product.html"
     slug_url_kwarg = "slug"
 
-
+    def get_context_data(self,*args,**kwargs):
+        context = super(ItemView,self).get_context_data(*args,**kwargs)
+        context["related_items"] = Item.objects.exclude(slug=self.kwargs["slug"])
+        return context
 
 class RemoveFromCart(LoginRequiredMixin,View):
     def get(self,request,slug,*args,**kwargs):
