@@ -91,10 +91,28 @@ class Order(models.Model):
     items = models.ManyToManyField(OrderItem)
     ordered_date = models.DateTimeField(null=True)
     add_date = models.DateTimeField(auto_now_add=True)
+    coupon = models.ForeignKey('Coupon',on_delete=models.SET_NULL,blank=True,null=True)
 
     def get_total(self):
         total = 0
         for oi in self.items.all():
             total += oi.get_final_price()
+
+        if self.coupon:
+            total -= (total * self.coupon.percentage)/100
         return total
+
+    def get_coupon_amount(self):
+        total = 0
+        for oi in self.items.all():
+            total += oi.get_final_price()
+
+        return (total * self.coupon.percentage) / 100
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=200)
+    percentage = models.IntegerField()
+
+    def __str__(self):
+        return self.code
 

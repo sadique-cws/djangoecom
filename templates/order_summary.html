@@ -2,7 +2,6 @@
 
 {% block content %}
     <div class="container mt-4">
-
     <div class="row">
     <div class="col-lg-7">
         {% for o in order.items.all %}
@@ -41,6 +40,14 @@
             <div class="card-body p-0">
                 <div class="list-group">
                     <li class="list-group-item active">Price Details</li>
+
+
+                    {% if order.coupon %}
+                        <li class="list-group-item bg-success text-white">Coupon Discount ({{ order.coupon.percentage }}%):
+                            <span class="float-right">₹{{ order.get_coupon_amount }}</span>
+                        </li>
+                    {% endif %}
+
                     <li class="list-group-item">Total Amount: <span class="float-right">₹0000</span></li>
                     <li class="list-group-item">Total Discount: <span class="float-right">₹0000</span></li>
                     <li class="list-group-item">Total Saving: <span class="float-right">₹0000</span></li>
@@ -48,7 +55,20 @@
                 </div>
             </div>
         </div>
+    {% if not order.coupon %}
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url "store:add-coupon" %}" method="post" class="d-flex">
+                   {% csrf_token %}
+                    {{ form.code }}
+                    <input type="submit" class="btn btn-success">
+                </form>
+            </div>
+        </div>
+        {% endif %}
     </div>
     </div>
     </div>
+
+
 {% endblock %}

@@ -5,11 +5,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import CreateView,DeleteView,UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
+from store.forms import *
+from django.contrib import messages
 
 class HomeView(ListView):
     model = Item
     paginate_by = 10
     template_name = "home.html"
+
 
 class ItemView(DetailView):
     model = Item
@@ -20,6 +23,7 @@ class ItemView(DetailView):
         context = super(ItemView,self).get_context_data(*args,**kwargs)
         context["related_items"] = Item.objects.exclude(slug=self.kwargs["slug"])
         return context
+
 
 class RemoveFromCart(LoginRequiredMixin,View):
     def get(self,request,slug,*args,**kwargs):
@@ -89,11 +93,10 @@ class AddToCart(LoginRequiredMixin,View):
             if order.items.filter(item__slug=slug).exists():
                 order_item.qty += 1
                 order_item.save()
-                #todo: msg  item updated successfully
+                messages.success(self.request,"item updated successfully")
             else:
                 order.items.add(order_item)
-                #todo: msg item added successfully
-
+                messages.success(self.request, "item added successfully")
             return redirect("store:order_summary")
         else:
             add_date = timezone.now()
@@ -107,11 +110,13 @@ class AddToCart(LoginRequiredMixin,View):
             #todo: msg item added successfully
             return redirect("store:order_summary")
 
+
 class OrderSummaryView(LoginRequiredMixin,View):
     def get(self,request,*args,**kwargs):
         try:
             order = Order.objects.get(user=request.user,ordered=False)
-            context = {"order":order}
+            form = CouponForm()
+            context = {"order":order,"form":form}
         except ObjectDoesNotExist:
             #todo: msg you do not have any active order
             return redirect("store:homepage")
@@ -119,4 +124,39 @@ class OrderSummaryView(LoginRequiredMixin,View):
         return render(self.request,"order_summary.html",context)
 
 
+def check_coupon(request,code):
+    try:
+        coupon = Coupon.objects.get(code=code)
+        return True
+    except ObjectDoesNotExist:
+        return False
+
+def get_coupon(request,code):
+    try:
+        coupon = Coupon.objects.get(code=code)
+        return coupon
+    except ObjectDoesNotExist:
+        messages.warning(request,"this coupon doesn't exist")
+        return redirect("store:order_summary")
+
+
+class AddCouponView(View):
+    def post(self,request,*args,**kwargs):
+        if self.request.method == "POST":
+            form = CouponForm(self.request.POST or None)
+
+            if form.is_valid():
+                code = form.cleaned_data.get("code")
+                if check_coupon(self.request,code):
+                    order = Order.objects.get(user=self.request.user,ordered=False)
+                    order.coupon = get_coupon(self.request,code)
+                    order.save()
+                    messages.success(self.request,"msg coupon add successfully")
+                    return redirect("store:order_summary")
+                else:
+                    messages.error(self.request,"invalid Coupon")
+                    return redirect("store:order_summary")
+            else:
+                #todo : invalid form data try again
+                return redirect("store:order_summary")
 
