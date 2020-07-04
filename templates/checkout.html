@@ -3,16 +3,58 @@
 {% block content %}
     <div class="container mt-4">
 
+
         <div class="row">
             <div class="col-lg-8">
+                <div class="card">
+                    <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        {% for ad in address %}
+                        <div class="col-lg-4 p-2">
+                            <div class="card">
+                                    <div class="card-body">
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" class="custom-control-input" name="save_address" value="{{ ad.id }}">
+                                            <label for="" class="custom-control-label">
+                                                <h6>{{ ad.name }}</h6>
+                                                <p class="small m-0">
+                                                    {{ ad.contact }}
+                                                </p>
+                                                <p class="small m-0">
+                                                    {{ ad.locality }}, {{ ad.city }} ({{ ad.state }})
+                                                </p>
+                                                <p class="small m-0">{{ ad.pin }}</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <input type="submit" class="btn btn-success">
+                    </div>
+                    </form>
+                </div>
+
+            <h2>Or </h2>
+
 
                 <div class="card">
                     <div class="card-body">
-                        <form action="" method="post">
+                        <form method="post">
                             {% csrf_token %}
-
                             {{ form|crispy }}
-\
+                            <div class="mt-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <a href="{% url 'store:homepage' %}" class="btn btn-danger btn-block">Shopping More</a>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="submit" class="btn btn-success btn-block" value="Next">
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>

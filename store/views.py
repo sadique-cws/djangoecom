@@ -126,8 +126,54 @@ class OrderSummaryView(LoginRequiredMixin,View):
 
 class CheckoutView(LoginRequiredMixin,View):
     def get(self,request,*args,**kwargs):
-        form = CheckoutForm()
-        return render(self.request,"checkout.html",{"form":form})
+        try:
+            order = Order.objects.get(user=self.request.user,ordered=False)
+            form = CheckoutForm()
+
+            context = {
+                "form": form,
+                'order':order,
+                'address':Address.objects.filter(user=self.request.user)
+            }
+            return render(self.request, "checkout.html", context)
+
+        except ObjectDoesNotExist:
+            messages.error(self.request,"You don't have any active order")
+            return redirect("store:order_summary")
+
+    def post(self,*args,**kwargs):
+        form = CheckoutForm(self.request.POST or None)
+
+        try:
+            order = Order.objects.get(user=self.request.user,ordered=False)
+
+            if self.request.method == "POST":
+                save_address = self.request.POST.get("save_address",None)
+
+                if save_address != None:
+                    selected_address = Address.objects.get(id=save_address)
+                    order.address = selected_address
+                    order.save()
+                    return redirect("store:homepage")
+                else:
+                    if form.is_valid():
+                        data = form.save(commit=False)
+                        data.user = self.request.user
+                        data.default = True
+                        data.save()
+
+                        order.address = data
+                        order.save()
+                        return redirect("store:homepage")
+                    else:
+                        messages.warning("please check form data")
+                        return redirect("store:checkout")
+
+        except ObjectDoesNotExist:
+            messages.error(self.request,"not found any active order")
+            return redirect("store:order_summary")
+
+
 
 
 
