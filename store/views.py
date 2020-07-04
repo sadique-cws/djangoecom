@@ -124,6 +124,13 @@ class OrderSummaryView(LoginRequiredMixin,View):
         return render(self.request,"order_summary.html",context)
 
 
+class CheckoutView(LoginRequiredMixin,View):
+    def get(self,request,*args,**kwargs):
+        form = CheckoutForm()
+        return render(self.request,"checkout.html",{"form":form})
+
+
+
 def check_coupon(request,code):
     try:
         coupon = Coupon.objects.get(code=code)

@@ -92,6 +92,7 @@ class Order(models.Model):
     ordered_date = models.DateTimeField(null=True)
     add_date = models.DateTimeField(auto_now_add=True)
     coupon = models.ForeignKey('Coupon',on_delete=models.SET_NULL,blank=True,null=True)
+    address = models.ForeignKey('Address',on_delete=models.SET_NULL,blank=True,null=True)
 
     def get_total(self):
         total = 0
@@ -115,4 +116,29 @@ class Coupon(models.Model):
 
     def __str__(self):
         return self.code
+
+
+TYPE_CHOICE = {
+    ("W","WORK"),
+    ("H","HOME"),
+}
+
+class Address(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    contact = models.IntegerField()
+    pin = models.IntegerField()
+    city = models.CharField(max_length=10)
+    state = models.CharField(max_length=10)
+    landmark = models.CharField(max_length=200)
+    alternative_no = models.IntegerField()
+    default = models.BooleanField(default=False)
+    address_type = models.CharField(choices=TYPE_CHOICE,max_length=2)
+
+
+    class Meta:
+        verbose_name_plural = "Addresses"
+
+    def __str__(self):
+        return self.user.username
 

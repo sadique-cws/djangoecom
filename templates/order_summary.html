@@ -53,9 +53,22 @@
                     <li class="list-group-item">Total Saving: <span class="float-right">₹0000</span></li>
                     <li class="list-group-item"><b>Payable Amount: <span class="float-right">₹{{ order.get_total }}</span></b></li>
                 </div>
+
+
             </div>
         </div>
+
+    <div class="row mt-5">
+            <div class="col-lg-6">
+                <a href="" class="btn btn-warning btn-block">Continue Shopping</a>
+            </div>
+            <div class="col-lg-6">
+                 <a href="{% url 'store:checkout' %}" class="btn btn-success btn-block">Checkout</a>
+            </div>
+    </div>
+
     {% if not order.coupon %}
+
         <div class="card">
             <div class="card-body">
                 <form action="{% url "store:add-coupon" %}" method="post" class="d-flex">
@@ -65,9 +78,12 @@
                 </form>
             </div>
         </div>
+
         {% endif %}
     </div>
+
     </div>
+
     </div>
 
 
