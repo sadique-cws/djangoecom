@@ -142,3 +142,15 @@ class Address(models.Model):
     def __str__(self):
         return self.user.username
 
+
+class Payment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL,blank=True,null=True)
+    txn_id = models.CharField(max_length=200)
+    amount = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    order_id = models.ForeignKey(Order,on_delete=models.SET_NULL,null=True,blank=True)
+
+
+    def __str__(self):
+        return self.user.username
+

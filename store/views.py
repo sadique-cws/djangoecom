@@ -7,11 +7,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from store.forms import *
 from django.contrib import messages
+import random
+import string
 
 class HomeView(ListView):
     model = Item
     paginate_by = 10
     template_name = "home.html"
+
+
+def create_txn_id():
+    return  '' .join(random.choices(string.ascii_lowercase + string.digits,k=20))
 
 
 class ItemView(DetailView):
@@ -189,6 +195,15 @@ class PaymentView(LoginRequiredMixin,View):
         order = Order.objects.get(user=self.request.user,ordered=False)
 
         if self.request.POST.get("payment") == "cod":
+            pay = Payment()
+
+            pay.user = self.request.user
+
+            pay.amount = order.get_total()
+            pay.txn_id  = create_txn_id()
+            pay.order_id = order
+            pay.save()
+
             order_item = order.items.all()
             order_item.update(ordered=True)
 

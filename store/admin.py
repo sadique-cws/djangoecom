@@ -23,10 +23,11 @@ class BrandAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Item,ItemAdmin)
+admin.site.register(Payment)
 admin.site.register(Category)
 admin.site.register(Brand,BrandAdmin)
 admin.site.register(Coupon,CouponAdmin)
 admin.site.register(Address,AddressAdmin)
 admin.site.register(Order,OrderAdmin)
-admin.site.register(OrderItem)
+admin.site.register(OrderItem,OrderItemAdmin)
 
