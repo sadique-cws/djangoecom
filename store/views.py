@@ -154,17 +154,16 @@ class CheckoutView(LoginRequiredMixin,View):
                     selected_address = Address.objects.get(id=save_address)
                     order.address = selected_address
                     order.save()
-                    return redirect("store:homepage")
+                    return redirect("store:payment")
                 else:
                     if form.is_valid():
                         data = form.save(commit=False)
                         data.user = self.request.user
-                        data.default = True
                         data.save()
 
                         order.address = data
                         order.save()
-                        return redirect("store:homepage")
+                        return redirect("store:payment")
                     else:
                         messages.warning("please check form data")
                         return redirect("store:checkout")
@@ -174,7 +173,33 @@ class CheckoutView(LoginRequiredMixin,View):
             return redirect("store:order_summary")
 
 
+class PaymentView(LoginRequiredMixin,View):
+    def get(self,request,*args,**kwargs):
+        order = Order.objects.get(user=self.request.user,ordered=False)
 
+        if not order.address:
+            return redirect("store:checkout")
+        else:
+            context = {
+                "order":order,
+            }
+        return render(self.request,"payment.html",context)
+
+    def post(self,*args,**kwargs):
+        order = Order.objects.get(user=self.request.user,ordered=False)
+
+        if self.request.POST.get("payment") == "cod":
+            order_item = order.items.all()
+            order_item.update(ordered=True)
+
+            for item in order_item:
+                item.save()
+
+            order.ordered = True
+            order.ordered_date = timezone.now()
+            order.save()
+
+            return redirect("store:homepage")
 
 
 def check_coupon(request,code):

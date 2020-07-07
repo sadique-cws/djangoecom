@@ -11,5 +11,5 @@ class CouponForm(forms.Form):
 class CheckoutForm(forms.ModelForm):
     class Meta:
         model = Address
-        fields = ("name","contact","city","landmark","state","alternative_no","pin","address_type")
+        fields = ("name","contact","city","landmark","state","alternative_no","pin","address_type","default")
 
