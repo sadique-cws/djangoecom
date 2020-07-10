@@ -1,0 +1,44 @@
+{% extends 'base.html'%}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+        {% for main in order %}
+            <div class="card mb-3">
+            <div class="card-header">Order Id: 0000000000000{{ main.id }}</div>
+                <div class="card-body">
+                    {% for o in main.items.all %}
+                        <div class="card border-0">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-1">
+                        <img src="{{ o.item.image.url }}" alt="" class="card-img-top">
+
+                    </div>
+                    <div class="col-lg-10">
+                        <h6>{{ o.item.title }}</h6>
+                    <p class="mb-0">
+                        {% if o.item.discount_price %}
+                            <del><span class="small">₹{{ o.get_total_price }}</span></del>
+                        <span class="small">₹{{ o.get_total_discount_price }}</span>
+                            <span class="text-success">₹{{ o.get_total_saving_amount }}</span>
+                        {% else %}
+                            <span class="small font-weight-bold">₹{{ o.get_total_price }}</span>
+                        {% endif %}
+</p>
+                     <span class="m-0 p-0 small">Qty: {{ o.qty }}</span>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+                 {% endfor %}
+                </div>
+            </div>
+
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

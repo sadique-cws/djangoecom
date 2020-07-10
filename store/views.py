@@ -253,3 +253,13 @@ class AddCouponView(View):
                 #todo : invalid form data try again
                 return redirect("store:order_summary")
 
+
+class MyOrderView(View):
+    def get(self,request,*args,**kwargs):
+
+        context = {
+            "order":Order.objects.filter(user=self.request.user,ordered=True)
+        }
+
+        return render(self.request,"myOrder.html",context)
+
